@@ -45,19 +45,14 @@ cluster_numbers=range(2,10)
 prestate_path='ana/prestate'
 prestate_clus_selection_final_fn = 'prestate_clus_selection_final.csv'
 prestate_clus_selection_final_fp=prestate_path+'/'+prestate_clus_selection_final_fn
-prestate_clus_selection_condgfp_final_fn = 'prestate_clus_selection_condgfp_final.csv'
-prestate_clus_selection_condgfp_final_fp = prestate_path+'/'+prestate_clus_selection_condgfp_final_fn
 
-# name for clusters conducted in 2 steps, first cluster at subject level and then at group level
-report_fn_final = 'cfa_n_vep_prestate_subclust.html'
+
+
 
 # name for clusters conducted on entire data
 report_all_gfp_fn_final='cfa_n_vep_prestate_whole_gfp.html'
 cluster_centers_epochs_path = 'clus_center/'
 
-# name for clusters conducted within condition
-report_all_cond_gfp_final = 'cfa_n_vep_prestate_condgfp_'
-# constants for combination analysis
 
 
 # Define the base combinations
@@ -91,17 +86,10 @@ fitting_combinations = {
     # 'aware': ['inh', 'exh']
     # 'unaware': ['inh', 'exh']]}
 # fitting analysis
-n_clus_subclust=[4,6]
-n_clus_wholegfp=[5]
-n_clus_condgfp = [5,5,5,5,4,4]
 
-n_clusters_list = {
-    'aware': 5,
-    'unaware': 5,
-    'dia' : 5,
-    'sys' : 5,
-    'inh' : 4,
-    'exh' : 4}
+n_clus_wholegfp=[5]
+
+
 
 phy_cond=['cardiac_phase','rsp_phase','awareness']
 #phy_cond=['phy_phases']

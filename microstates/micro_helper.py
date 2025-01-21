@@ -104,76 +104,6 @@ class MicroManager:
                 ax = ax[:-1]
         return fig, ax
 
-    def cluster_analysis(self):
-
-        for k, n_clusters in enumerate(cs.cluster_numbers):
-            ModK = ModKMeans(n_clusters=n_clusters, random_state=42, n_init=1000)
-            ModK.fit(self.gfp_max, n_jobs=-1)
-            self.ModK = ModK
-            # add scores
-            self.add_scores(idx=k)
-            # add gev increase plot
-            self.GEV.append(self.ModK._GEV_)
-            # add figure to list
-            fig, ax = self.get_subplot_axes(n_clusters)
-
-            self.ModK.plot(axes=ax)
-            caption = f'GEV for {n_clusters} clus solution is: {self.ModK._GEV_}'
-            caption_corr = f'corr for {n_clusters} clus solution'
-
-            self.figures.append(fig)
-            self.captions.append(caption)
-            fig_heat = self.get_cross_corr()
-            self.figures_corr.append(fig_heat)
-            self.caption_corr.append(caption_corr)
-
-        self.fig_score_raw = self.plot_scores_raw()
-        self.fig_score = self.plot_scores()
-        self.fig_gev_diff = self.plot_GEV_diff() 
-
-        self.report.add_figure(fig=self.figures, title=f'N clusters : {n_clusters}', caption=self.captions)
-        self.report.add_figure(fig=self.figures, title=f'N clusters : {n_clusters}', caption=self.captions)
-        self.report.add_figure(fig=self.figures_corr, title=f'cross corr of  : {n_clusters} clusters',
-                               caption=self.caption_corr)
-        self.report.add_figure(fig=self.fig_score_raw, title=f'Raw evaluation score', caption='Raw scores')
-        self.report.add_figure(fig=self.fig_score, title=f'Normalized evaluation score', caption='Scores')
-
-        self.report.add_figure(fig=self.fig_gev_diff, title=f'Increment in GEV', caption='diff in GEV')
-        plt.close('all')
-
-    def final_cluster_analysis(self, g_n=None,phys_cond=None):
-        if g_n is not None:
-            if phys_cond is None:
-                prestate_clus_selection_final = pd.read_csv(cs.prestate_clus_selection_final_fp)
-                clus_number = int(prestate_clus_selection_final['N_clus'][prestate_clus_selection_final['g_num'] == g_n])
-                errorcode = 0
-            else:
-                print("error: please specify either g_n or phys_cond, not both")
-                errorcode = 1
-        elif phys_cond is not None:
-                prestate_clus_selection_condgfp_final = pd.read_csv(cs.prestate_clus_selection_condgfp_final_fp)
-                clus_number = int(prestate_clus_selection_condgfp_final['N_clus'][prestate_clus_selection_condgfp_final['phy_cond'] == phys_cond])      
-                errorcode = 0
-        else:
-            print('error: please specify either g_n or phys_cond')
-            errorcode = 1
-            
-        if errorcode == 0:
-            ModK = ModKMeans(n_clusters=clus_number, random_state=42, n_init=1000)
-            ModK.fit(self.gfp_max, n_jobs=-1)
-            self.ModK = ModK
-            clus_cent = ModK.cluster_centers_.T
-    
-            # save cluster centers kept for final analysis
-            clus_epo = self.get_epo_cluster_centers()
-            self.save_single_clus_center(clus_epo)
-    
-            # add fig for final report
-            fig, ax = self.get_subplot_axes(clus_number)
-            self.ModK.plot(axes=ax)
-            return fig, clus_cent
-        else:
-            pass
 
     def grand_cluster_analysis(self, clus_list,micro_type,fig_subj_list=None, caption_list=None):
         # set path here
@@ -342,16 +272,6 @@ class MicroManager:
             seg_dict[cond] = segmentation.compute_parameters()
         return seg_dict,labels
     
-    def fitting_analyses_comb_4(self, gfp_epo, phys_cond, combinations):
-
-        fitting_dict_combined = {}  # Initialize an empty dictionary to store fitting results
-        for combination in combinations:
-            # Create the condition combination string
-            cond_comb = f'{phys_cond}/{combination}'
-            segmentation = self.ModK.predict(gfp_epo[cond_comb], reject_edges=False)
-            fitting_dict_combined[cond_comb] = segmentation.compute_parameters()
-        return fitting_dict_combined
-
 
     def format_param_df(self, list_df):
         list_df.drop(columns='unlabeled', inplace=True)
@@ -408,16 +328,4 @@ class MicroManager:
         df_fp = cs.prestate_path + '/' + df_fn
         os.makedirs(os.path.dirname(df_fp), exist_ok=True)
         self.long_df.to_csv(df_fp, index=False)
-    
-    def backToStartWD(self):
-        platform.system()
-        # define starting datafolder
 
-        if platform.system()=='Darwin':
-            os.chdir('/Volumes/BBC/BBC/WP1/data/EEG/tsk')
-        else:
-            os.chdir('Z:/BBC/WP1/data/EEG/tsk')
-            
-
-        
-        
