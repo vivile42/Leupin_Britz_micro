@@ -10,16 +10,15 @@ import mne
 fig_list=list()
 clus_list=list()
 caption_list=list()
-for g_n in b_cs.G_N_prestate:
+for g_n in b_cs.G_N_prestate[:2]:
     files = files_in_out.GetFiles(cs.datafolder, g_num=g_n,
                                   eeg_format=cs.end_format, condition=cs.cond)
-    # saving files in "files"
 
     MicroObject = hp.MicroManager(files)
     MicroObject.preproc_epo()
     MicroObject.gfp_extraction()
     MicroObject.get_epo_gfp()
-    MicroObject.save_gfp()
+    #MicroObject.save_gfp()
 
 
 
