@@ -5,12 +5,12 @@ import base.files_in_out as files_in_out
 import base.base_constants as b_cs  # all g_num
 import mne
 
-#%%
+#%% extract gfp
 
 fig_list=list()
 clus_list=list()
 caption_list=list()
-for g_n in b_cs.G_N_prestate[:2]:
+for g_n in b_cs.G_N_prestate:
     files = files_in_out.GetFiles(cs.datafolder, g_num=g_n,
                                   eeg_format=cs.end_format, condition=cs.cond)
 
@@ -18,7 +18,7 @@ for g_n in b_cs.G_N_prestate[:2]:
     MicroObject.preproc_epo()
     MicroObject.gfp_extraction()
     MicroObject.get_epo_gfp()
-    #MicroObject.save_gfp()
+    MicroObject.save_gfp()
 
 
 
