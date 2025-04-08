@@ -1,4 +1,4 @@
-Code accompanying Leupin and Britz, Pre-stimulus microstates The momentary state of the brain and  the bodily signals y exert independently influence perceptual awareness at the discrimination threshold.
+Code accompanying Leupin and Britz, Pre-stimulus microstates and bodily signals independently influence perceptual awareness at the discrimination threshold.
 We here provide the code for preprocessing, epoching, and pre-stimulus analysis of EEG data. EEG data can be made available upon request.
 
 #Code organization
