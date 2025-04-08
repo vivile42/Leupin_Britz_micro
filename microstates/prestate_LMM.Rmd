@@ -1,0 +1,164 @@
+---
+title: "prestate_LMM"
+output: html_document
+date: '2023-10-10'
+---
+#load libraries
+```{r}
+library(dplyr)
+library('lme4')
+library('lmerTest')
+library('arrow')
+library('gtsummary')
+library('emmeans')
+library('effectsize')
+library('olsrr')
+library('ARTool')
+```
+
+#load data from cardiac
+
+```{r}
+#df<-read.csv('/Volumes/BBC/BBC/WP1/data/EEG/tsk/ana/prestate/prestate_cardiac_inter.csv')
+
+df_card<-arrow::read_feather('/Volumes/BBC/BBC/WP1/data/EEG/tsk/ana/prestate/param df/wholegfp/cardiac_phase_5_clusters_tsk_n_prestate_wholegfp.feather')
+
+
+
+```
+filter  according to map 
+the index of the map goes from 0-4, they correspond to the conventional topographies
+map 0 = D
+map 1 = A
+map 2 = E
+map 3 = C
+map 4 = B
+```{r}
+df_card$map<-factor(df_card$map)
+df_card$g_num<-factor(df_card$g_num)
+df_card$awareness<-factor(df_card$awareness)
+df_card$phy_cond<-factor(df_card$phy_cond)
+map_val_card="1"#change this value to get the corresponding map
+df_map_card <-df_card %>% filter(map==map_val_card)
+
+```
+
+
+2 different dv 
+timecov_ = timecoverage (% of time in which there's one rather than the other)
+gev_ = global explained variance 
+
+```{r}
+model_awa_card<-lmer(timecov_~awareness*phy_cond+(1|g_num), data=df_map_card)
+summary(model_awa_card)
+
+anova(model_awa_card)
+eta_squared(model_awa_card) #partial eta by default
+```
+
+
+```{r}
+qqnorm(residuals(model_awa_card))
+qqline(resid(model_awa_card))
+
+# Calcola i residui del modello
+residui <- resid(model_awa_card)
+
+# Standardizza i residui
+residui_std <- (residui - mean(residui)) / sd(residui)
+
+# Test di Kolmogorov-Smirnov contro una distribuzione normale
+ks.test(residui_std, "pnorm")
+
+```
+
+non-parametric option (even normality of residuals ok)
+```{r}
+
+
+
+# Modello ART per una 2x2 ANOVA con soggetto come random effect
+mod_art <- art(timecov_~awareness*phy_cond+(1|g_num), data=df_map_card)
+
+# ANOVA sui dati trasformati
+anova(mod_art)
+```
+
+```{r}
+model_awa_card<-lmer(gev_~awareness*phy_cond+(1|g_num), data=df_map_card)
+summary(model_awa_card)
+
+anova(model_awa_card)
+eta_squared(model_awa_card) #partial eta by default
+```
+
+```{r}
+qqnorm(residuals(model_awa_card))
+qqline(resid(model_awa_card))
+shapiro.test(resid(model_awa_card))
+
+```
+#load data from rsp
+
+```{r}
+#df<-read.csv('/Volumes/BBC/BBC/WP1/data/EEG/tsk/ana/prestate/prestate_cardiac_inter.csv')
+
+df_rsp<-arrow::read_feather('/Volumes/BBC/BBC/WP1/data/EEG/tsk/ana/prestate/param df/wholegfp/rsp_phase_5_clusters_tsk_n_prestate_wholegfp.feather')
+
+
+
+```
+filter  according to map 
+the index of the map goes from 0-4, they correspond to the conventional topographies
+map 0 = D
+map 1 = A
+map 2 = E
+map 3 = C
+map 4 = B
+```{r}
+df_rsp$map<-factor(df_rsp$map)
+df_rsp$g_num<-factor(df_rsp$g_num)
+df_rsp$awareness<-factor(df_rsp$awareness)
+df_rsp$phy_cond<-factor(df_rsp$phy_cond)
+map_val_rsp="0" #change this value to get the corresponding map
+df_map_rsp <-df_rsp %>% filter(map==map_val_rsp)
+
+```
+
+
+2 different dv 
+timecov_ = timecoverage (% of time in which there's one rather than the other)
+gev_ = global explained variance 
+
+```{r}
+model_awa_rsp<-lmer(timecov_~awareness*phy_cond+(1|g_num), data=df_map_rsp)
+summary(model_awa_rsp)
+
+anova(model_awa_rsp)
+eta_squared(model_awa_rsp) #partial eta by default
+```
+
+
+```{r}
+model_awa_rsp<-lmer(gev_~awareness*phy_cond+(1|g_num), data=df_map_rsp)
+summary(model_awa_rsp)
+
+anova(model_awa_rsp)
+eta_squared(model_awa_rsp) #partial eta by default
+```
+
+```{r}
+qqnorm(residuals(model_awa_rsp))
+qqline(resid(model_awa_rsp))
+# Calcola i residui del modello
+residui <- resid(model_awa_card)
+
+# Standardizza i residui
+residui_std <- (residui - mean(residui)) / sd(residui)
+
+# Test di Kolmogorov-Smirnov contro una distribuzione normale
+ks.test(residui_std, "pnorm")
+
+
+```
+
